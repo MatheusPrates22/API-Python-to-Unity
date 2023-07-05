@@ -1,0 +1,43 @@
+{
+    "_UnityAPI__name": "Pessoa",
+    "_UnityAPI__photoNumber": 1,
+    "_UnityAPI__objectTransform": {
+        "_Transform__position": {
+            "x": 0,
+            "y": 1,
+            "z": 2
+        },
+        "_Transform__rotation": {
+            "x": 0,
+            "y": 2,
+            "z": 0
+        },
+        "_Transform__scale": {
+            "x": 1,
+            "y": 3,
+            "z": 1
+        }
+    },
+    "_UnityAPI__camera": {
+        "_Transform__position": {
+            "x": 1,
+            "y": 0,
+            "z": -3.17
+        },
+        "_Transform__rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "_Transform__scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+        },
+        "_Camera__fov": 60,
+        "_Camera__resolution": {
+            "x": 1920,
+            "y": 1080
+        }
+    }
+}
