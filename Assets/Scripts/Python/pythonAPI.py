@@ -18,6 +18,7 @@ def SceneSnapshot(data: UnityAPI, filename = r"Assets\\Photos\\imageAPI.png"):
     #recebe a quantidade de pacotes (a imagem é dividida em pacotes de até BUFFER_SIZE bytes)
     dataReceived, addr = udp_socket.recvfrom(BUFFER_SIZE)
     amountOfPackages = dataReceived.decode()
+    # print("Packages: " + amountOfPackages)
     amountOfPackages = int(amountOfPackages)
 
     #le todos os pacotes que recebeu do unity para formar a imagem
@@ -27,12 +28,15 @@ def SceneSnapshot(data: UnityAPI, filename = r"Assets\\Photos\\imageAPI.png"):
             dataReceived, addr = udp_socket.recvfrom(BUFFER_SIZE)
             image_data += dataReceived
             amountOfPackages  = amountOfPackages - 1
+            # if (amountOfPackages % 20 == 0 or amountOfPackages < 5):
+                # print("Packages left: " + str(amountOfPackages))
         else:
             break
 
     #fecha a conexão com unity
     udp_socket.close()
     
+    # print("Gerando imagem")
     #Salva a imagem
     with open(filename, "wb") as file:
         file.write(image_data)

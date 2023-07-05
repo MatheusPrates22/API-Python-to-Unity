@@ -25,8 +25,6 @@ public class ScreenShotController : MonoBehaviour
         this.unityAPIInfo = format;
         this._name = format._UnityAPI__name;
         this._photoNumber = format._UnityAPI__photoNumber;
-        // ChangeObjectTransform(format._UnityAPI__objectTransform);
-        // ChangeCameraSettings(format._UnityAPI__camera);
     }
 
     private void ChangeObjectTransform(MyTransform myTransform){

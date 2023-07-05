@@ -15,7 +15,6 @@ public class SocketReceiver : MonoBehaviour
 
     [Header("Gameobject")]
     [SerializeField] private ScreenShotController _controller;
-    [SerializeField] private Transform cylinderTransform;
 
     private UdpClient udpClient;
     private IPEndPoint endPoint;
@@ -49,7 +48,6 @@ public class SocketReceiver : MonoBehaviour
         //---------TREAT INFO------------
         UnityAPIJsonFormat unityAPIJsonFormat = JsonUtility.FromJson<UnityAPIJsonFormat>(receivedString);
         _controller.Initialize(unityAPIJsonFormat);
-        // photoResolution = unityAPIJsonFormat._UnityAPI__camera._Camera__resolution;
         needStartCoroutine = true;
 
         //Volta a ouvir nova chamada
@@ -78,7 +76,7 @@ public class SocketReceiver : MonoBehaviour
         byte[] responseBytes = Encoding.ASCII.GetBytes(amountOfPackages);
         udpClient.Send(responseBytes, responseBytes.Length, endPoint);
 
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.5f);
 
         //---------ENVIA OS PACOTES------------
         for (int i = 0; i < numPackets; i++)
@@ -89,6 +87,7 @@ public class SocketReceiver : MonoBehaviour
             System.Array.Copy(imageBytes, offset, packetData, 0, packetSize);
 
             udpClient.Send(packetData, packetData.Length, endPoint);
+            yield return new WaitForSeconds(0.001f);
         }
     }
 }
