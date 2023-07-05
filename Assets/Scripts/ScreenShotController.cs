@@ -4,32 +4,35 @@ using UnityEngine;
 
 public class ScreenShotController : MonoBehaviour
 {
+    [SerializeField] private bool forceChangesByPythonCall = false;
     [SerializeField] private Transform screenshotTransform;
 
     private string _name;
     private float _photoNumber;
     
-    public Vector3 objectPosition;
-    public Vector3 objectRotation;
-    public Vector3 objectScale = Vector3.one;
+    private UnityAPIJsonFormat unityAPIInfo;
+
 
     private void Update() {
-        screenshotTransform.position = objectPosition;
-        screenshotTransform.rotation = Quaternion.Euler(objectRotation);
-        screenshotTransform.localScale = objectScale;
+        if (forceChangesByPythonCall){
+            ChangeObjectTransform(unityAPIInfo._UnityAPI__objectTransform);
+            ChangeCameraSettings(unityAPIInfo._UnityAPI__camera);
+        }
     }
 
     public void Initialize(UnityAPIJsonFormat format){
+        forceChangesByPythonCall = true;
+        this.unityAPIInfo = format;
         this._name = format._UnityAPI__name;
         this._photoNumber = format._UnityAPI__photoNumber;
-        ChangeObjectTransform(format._UnityAPI__objectTransform);
+        // ChangeObjectTransform(format._UnityAPI__objectTransform);
         // ChangeCameraSettings(format._UnityAPI__camera);
     }
 
     private void ChangeObjectTransform(MyTransform myTransform){
-        objectPosition = myTransform._Transform__position;
-        objectRotation = myTransform._Transform__rotation;
-        objectScale = myTransform._Transform__scale;
+       screenshotTransform.position = unityAPIInfo._UnityAPI__objectTransform._Transform__position;
+        screenshotTransform.rotation = Quaternion.Euler(unityAPIInfo._UnityAPI__objectTransform._Transform__rotation);
+        screenshotTransform.localScale = unityAPIInfo._UnityAPI__objectTransform._Transform__scale;
     }
 
     private void ChangeCameraSettings(MyCamera myCamera){
@@ -37,5 +40,6 @@ public class ScreenShotController : MonoBehaviour
         Camera.main.transform.rotation = Quaternion.Euler(myCamera._Transform__rotation);
         Camera.main.transform.localScale = myCamera._Transform__scale;
         Camera.main.fieldOfView = myCamera._Camera__fov;
+        Screen.SetResolution((int)myCamera._Camera__resolution.x, (int)myCamera._Camera__resolution.y, false);
     }
 }

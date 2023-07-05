@@ -1,28 +1,26 @@
 import socket
-import keyboard
-import os
-from data import UnityAPI, Camera, Transform, Vector3, Vector2
+from data import UnityAPI
 
 host = 'localhost'  # Endereço IP ou nome do host do Unity
 port = 12345  # Porta do Unity
 
-BUFFER_SIZE = 1024
+BUFFER_SIZE = 1024 #Tamanho do pacote a ser recebido do Unity
 
 
 udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 udp_socket.connect((host, port))
 
-def SceneSnapshot(data: UnityAPI):
+def SceneSnapshot(data: UnityAPI, filename = r"Assets\\Photos\\imageAPI.png"):
+    #manda os dados para o unity
     message = data.toJson().encode('utf-8')
-    # print(message)
-
     udp_socket.send(message)
     
+    #recebe a quantidade de pacotes (a imagem é dividida em pacotes de até BUFFER_SIZE bytes)
     dataReceived, addr = udp_socket.recvfrom(BUFFER_SIZE)
     amountOfPackages = dataReceived.decode()
-    print("Quantidade de pacotes: " + amountOfPackages)
     amountOfPackages = int(amountOfPackages)
 
+    #le todos os pacotes que recebeu do unity para formar a imagem
     image_data = b""
     while True: 
         if amountOfPackages > 0:
@@ -32,28 +30,11 @@ def SceneSnapshot(data: UnityAPI):
         else:
             break
 
-    print("\n-----Socket closed-----")
+    #fecha a conexão com unity
     udp_socket.close()
     
-    
-    print("\n-----Gerando imagem-----")
-    with open("Assets\\Photos\\imageTest.png", "wb") as file:
+    #Salva a imagem
+    with open(filename, "wb") as file:
         file.write(image_data)
 
-
-#----------OBJECT----------
-objectPosition = Vector3(-1, 0, 0)
-objectRotation = Vector3(0, 0, 0)
-objectScale = Vector3(2, 1, 1)
-objectTransform = Transform(objectPosition, objectRotation, objectScale)
-
-#----------CAMERA----------
-cameraPosition = Vector3(0, 0, -3.17)
-cameraRotation = Vector3(0, 0, 0)
-cameraScale = Vector3(1, 1, 1)
-cameraTransform = Transform(cameraPosition, cameraRotation, cameraScale)
-camera = Camera(cameraTransform, 60, Vector2(1920, 1080))
-
-#---------API-----------
-data = UnityAPI("Pessoa", 1, objectTransform, camera)
-SceneSnapshot(data)
+    return image_data

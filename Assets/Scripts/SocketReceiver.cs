@@ -8,22 +8,26 @@ using System.IO;
 
 public class SocketReceiver : MonoBehaviour
 {
-    public const int GATE = 12345;
-
+    [Header("Socket")]
+    public int port = 12345;
     public int maxPacketSize = 1024;
 
+
+    [Header("Gameobject")]
     [SerializeField] private ScreenShotController _controller;
     [SerializeField] private Transform cylinderTransform;
 
     private UdpClient udpClient;
     private IPEndPoint endPoint;
+
     private bool needStartCoroutine;
+
+    // private Vector2 photoResolution;
 
     private void Start()
     {
-        udpClient = new UdpClient(GATE);
+        udpClient = new UdpClient(port);
         udpClient.BeginReceive(ReceiveCallback, null);
-        // udpClient.BeginReceive(CoroutineCallback, null);
     }
 
     private void Update() {
@@ -37,22 +41,18 @@ public class SocketReceiver : MonoBehaviour
     private void ReceiveCallback(System.IAsyncResult result)
     {
         //--------RECEIVE INFO---------
-        endPoint = new IPEndPoint(IPAddress.Any, GATE);
-        // IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, GATE);
+        endPoint = new IPEndPoint(IPAddress.Any, port);
         byte[] receivedBytes = udpClient.EndReceive(result, ref endPoint);
         string receivedString = Encoding.ASCII.GetString(receivedBytes);
-        Debug.Log("Mensagem recebida: " + receivedString);
+        // Debug.Log("Mensagem recebida: " + receivedString);
         
         //---------TREAT INFO------------
         UnityAPIJsonFormat unityAPIJsonFormat = JsonUtility.FromJson<UnityAPIJsonFormat>(receivedString);
         _controller.Initialize(unityAPIJsonFormat);
+        // photoResolution = unityAPIJsonFormat._UnityAPI__camera._Camera__resolution;
         needStartCoroutine = true;
 
-        // //---------RESPONSE------------
-        // string response = "Resposta da Unity";
-        // byte[] responseBytes = Encoding.ASCII.GetBytes(response);
-        // udpClient.Send(responseBytes, responseBytes.Length, endPoint);
-
+        //Volta a ouvir nova chamada
         udpClient.BeginReceive(ReceiveCallback, null);
     }
 
@@ -71,7 +71,7 @@ public class SocketReceiver : MonoBehaviour
 
         //---------DIVIDE EM X PACOTES------------
         int numPackets = Mathf.CeilToInt((float)imageBytes.Length / maxPacketSize);
-        Debug.Log("Number of packets: " + numPackets);
+        // Debug.Log("Number of packets: " + numPackets);
 
         //---------ENVIA O NÚMERO DE PACOTES------------
         string amountOfPackages = numPackets.ToString();
