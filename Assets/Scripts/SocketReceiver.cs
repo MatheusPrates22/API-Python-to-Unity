@@ -5,9 +5,14 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.IO;
+using System;
 
 public class SocketReceiver : MonoBehaviour
 {
+    public static SocketReceiver Instance { get; private set; }
+
+    public static event EventHandler<string> OnReceiveCalled;
+
     [Header("Socket")]
     public int port = 12345;
     public int maxPacketSize = 1024;
@@ -23,18 +28,14 @@ public class SocketReceiver : MonoBehaviour
 
     // private Vector2 photoResolution;
 
+    private void Awake() {
+        if (Instance == null) Instance = this; else Destroy(Instance);
+    }
+
     private void Start()
     {
         udpClient = new UdpClient(port);
         udpClient.BeginReceive(ReceiveCallback, null);
-    }
-
-    private void Update() {
-        if (needStartCoroutine)
-        {
-            StartCoroutine(CaptureScreenshotAndSendResponse());
-            needStartCoroutine = false;
-        }
     }
 
     private void ReceiveCallback(System.IAsyncResult result)
@@ -46,47 +47,53 @@ public class SocketReceiver : MonoBehaviour
         // Debug.Log("Mensagem recebida: " + receivedString);
         
         //---------TREAT INFO------------
-        UnityAPIJsonFormat unityAPIJsonFormat = JsonUtility.FromJson<UnityAPIJsonFormat>(receivedString);
-        _controller.Initialize(unityAPIJsonFormat);
-        needStartCoroutine = true;
+        OnReceiveCalled?.Invoke(this, receivedString);
 
         //Volta a ouvir nova chamada
         udpClient.BeginReceive(ReceiveCallback, null);
     }
 
-    private IEnumerator CaptureScreenshotAndSendResponse()
+    public static void SendMessageCallback(Texture2D texture, bool sendNumPackets = true)
     {
-        //---------TIRA FOTO------------
-        yield return new WaitForEndOfFrame();
+        byte[] messageBytes = texture.EncodeToPNG();
+        SendMessageCallback(messageBytes, sendNumPackets);
+    }
 
-        string screenshotPath = "Assets\\Photos\\screenshotCoroutine.png";
-        ScreenCapture.CaptureScreenshot(screenshotPath);
+    public static void SendMessageCallback(string message, bool sendNumPackets = true)
+    {
+        byte[] messageBytes = Encoding.ASCII.GetBytes(message);
+        SendMessageCallback(messageBytes, sendNumPackets);
+    }
 
-        yield return new WaitForSeconds(0.2f);
+    public static void SendMessageCallback(byte[] messageBytes, bool sendNumPackets = true)
+    {
+        try
+        {
+            Instance.StartCoroutine(SendMessageCoroutine(messageBytes, sendNumPackets));
+        } catch (Exception e){
+            Debug.Log(e.ToString());
+        }
 
-        //---------CONVERTE EM BYTES------------
-        byte[] imageBytes = File.ReadAllBytes(screenshotPath);
+    }
 
+    private static IEnumerator SendMessageCoroutine(byte[] messageBytes, bool sendNumPackets)
+    {
+        int numPackets = Mathf.CeilToInt((float)messageBytes.Length / Instance.maxPacketSize);
         //---------DIVIDE EM X PACOTES------------
-        int numPackets = Mathf.CeilToInt((float)imageBytes.Length / maxPacketSize);
-        // Debug.Log("Number of packets: " + numPackets);
+        if (sendNumPackets)
+        {
+            byte[] numPacketsBytes = Encoding.ASCII.GetBytes(numPackets.ToString());
+            Instance.udpClient.Send(numPacketsBytes, numPacketsBytes.Length, Instance.endPoint);
+        }
 
-        //---------ENVIA O NÚMERO DE PACOTES------------
-        string amountOfPackages = numPackets.ToString();
-        byte[] responseBytes = Encoding.ASCII.GetBytes(amountOfPackages);
-        udpClient.Send(responseBytes, responseBytes.Length, endPoint);
-
-        yield return new WaitForSeconds(0.5f);
-
-        //---------ENVIA OS PACOTES------------
         for (int i = 0; i < numPackets; i++)
         {
-            int offset = i * maxPacketSize;
-            int packetSize = Mathf.Min(maxPacketSize, imageBytes.Length - offset);
+            int offset = i * Instance.maxPacketSize;
+            int packetSize = Mathf.Min(Instance.maxPacketSize, messageBytes.Length - offset);
             byte[] packetData = new byte[packetSize];
-            System.Array.Copy(imageBytes, offset, packetData, 0, packetSize);
+            System.Array.Copy(messageBytes, offset, packetData, 0, packetSize);
 
-            udpClient.Send(packetData, packetData.Length, endPoint);
+            Instance.udpClient.Send(packetData, packetData.Length, Instance.endPoint);
             yield return new WaitForSeconds(0.001f);
         }
     }
