@@ -7,19 +7,15 @@ using System.Text;
 using System.IO;
 using System;
 
-public class SocketReceiver : MonoBehaviour
+public class UDPServer : MonoBehaviour
 {
-    public static SocketReceiver Instance { get; private set; }
+    public static UDPServer Instance { get; private set; }
 
     public static event EventHandler<string> OnReceiveCalled;
 
     [Header("Socket")]
     public int port = 12345;
     public int maxPacketSize = 1024;
-
-
-    [Header("Gameobject")]
-    [SerializeField] private ScreenShotController _controller;
 
     private UdpClient udpClient;
     private IPEndPoint endPoint;
@@ -44,7 +40,7 @@ public class SocketReceiver : MonoBehaviour
         endPoint = new IPEndPoint(IPAddress.Any, port);
         byte[] receivedBytes = udpClient.EndReceive(result, ref endPoint);
         string receivedString = Encoding.ASCII.GetString(receivedBytes);
-        // Debug.Log("Mensagem recebida: " + receivedString);
+        Debug.Log("Mensagem recebida: " + receivedString);
         
         //---------TREAT INFO------------
         OnReceiveCalled?.Invoke(this, receivedString);
@@ -53,6 +49,7 @@ public class SocketReceiver : MonoBehaviour
         udpClient.BeginReceive(ReceiveCallback, null);
     }
 
+    #region SEND MESSAGE
     public static void SendMessageCallback(Texture2D texture, bool sendNumPackets = true)
     {
         byte[] messageBytes = texture.EncodeToPNG();
@@ -76,9 +73,9 @@ public class SocketReceiver : MonoBehaviour
 
     }
 
-    private static IEnumerator SendMessageCoroutine(byte[] messageBytes, bool sendNumPackets)
+    private static IEnumerator SendMessageCoroutine(byte[] bytesToSend, bool sendNumPackets)
     {
-        int numPackets = Mathf.CeilToInt((float)messageBytes.Length / Instance.maxPacketSize);
+        int numPackets = Mathf.CeilToInt((float)bytesToSend.Length / Instance.maxPacketSize);
         //---------DIVIDE EM X PACOTES------------
         if (sendNumPackets)
         {
@@ -89,12 +86,17 @@ public class SocketReceiver : MonoBehaviour
         for (int i = 0; i < numPackets; i++)
         {
             int offset = i * Instance.maxPacketSize;
-            int packetSize = Mathf.Min(Instance.maxPacketSize, messageBytes.Length - offset);
+            int packetSize = Mathf.Min(Instance.maxPacketSize, bytesToSend.Length - offset);
             byte[] packetData = new byte[packetSize];
-            System.Array.Copy(messageBytes, offset, packetData, 0, packetSize);
+            System.Array.Copy(bytesToSend, offset, packetData, 0, packetSize);
 
             Instance.udpClient.Send(packetData, packetData.Length, Instance.endPoint);
             yield return new WaitForSeconds(0.001f);
         }
+    }
+    #endregion
+
+    private void OnApplicationQuit() {
+        udpClient.Close();
     }
 }

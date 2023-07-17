@@ -1,16 +1,20 @@
 import socket
+from os import path
 from data import UnityAPI
 
 host = 'localhost'  # Endereço IP ou nome do host do Unity
 port = 12345  # Porta do Unity
+server_address = (host, port)
 
 BUFFER_SIZE = 1024 #Tamanho do pacote a ser recebido do Unity
 
 
-udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-udp_socket.connect((host, port))
+# udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+udp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+udp_socket.connect(server_address)
 
-def SceneSnapshot(data: UnityAPI, filename = r"Assets\\Photos\\imageAPI.png"):
+def SceneSnapshot(data: UnityAPI, filename = r"imageAPI.png"):
+# def SceneSnapshot(data: UnityAPI, filename = r"Assets\\Photos\\imageAPI.png"):
     #manda os dados para o unity
     message = data.toJson().encode('utf-8')
     udp_socket.send(message)
@@ -38,7 +42,8 @@ def SceneSnapshot(data: UnityAPI, filename = r"Assets\\Photos\\imageAPI.png"):
     
     # print("Gerando imagem")
     #Salva a imagem
-    with open(filename, "wb") as file:
+    filepath = path.join("Assets", "Photos", filename)
+    with open(filepath, "wb") as file:
         file.write(image_data)
 
     return image_data

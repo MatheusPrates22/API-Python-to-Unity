@@ -26,11 +26,11 @@ public class ScreenShotController : MonoBehaviour
 
 
     private void OnEnable() {
-        SocketReceiver.OnReceiveCalled += SocialReceiver_OnReceiveCalled;
+        UDPServer.OnReceiveCalled += SocialReceiver_OnReceiveCalled;
     }
 
     private void OnDisable() {
-        SocketReceiver.OnReceiveCalled -= SocialReceiver_OnReceiveCalled;
+        UDPServer.OnReceiveCalled -= SocialReceiver_OnReceiveCalled;
     }
 
     private void SocialReceiver_OnReceiveCalled(object sender, string receivedString)
@@ -133,7 +133,7 @@ public class ScreenShotController : MonoBehaviour
         float tolerance = 1f;
         Texture2D imageWithoutBackground = RemoveBackground(texture, backgroundColor, tolerance);
 
-        SocketReceiver.SendMessageCallback(imageWithoutBackground, true);
+        UDPServer.SendMessageCallback(imageWithoutBackground, true);
     }
 
     #region ajust picture
@@ -176,7 +176,6 @@ public class ScreenShotController : MonoBehaviour
             for (int y = 0; y < originalTexture.height; y++)
             {
                 Color pixelColor = originalTexture.GetPixel(x, y);
-                Debug.Log(pixelColor);
                 float colorDistance = ColorDistance(pixelColor, backgroundColor);
 
                 if (colorDistance <= tolerance)
