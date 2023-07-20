@@ -1,9 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using UnityEngine;
 
 [System.Serializable]
-public class UnityAPIJsonFormat 
+public class APIPythonUnityJsonFormat 
+{
+    // AO ADICIONAR ALGO AQUI, ADD NO PYTHON TBM
+    public string message;
+    public string data; //precisa ser string para verificar se é nulo
+    public bool takeScreenshot;
+}
+
+[System.Serializable]
+public class DataAPI 
 {
     public string _UnityAPI__name;
     public float _UnityAPI__photoNumber;

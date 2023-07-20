@@ -1,10 +1,11 @@
 import socket
 from os import path
-from data import UnityAPI
+from data import UnityAPI, Transform
+from config_manager import ConfigManager
 
 host = 'localhost'  # Endereço IP ou nome do host do Unity
-port = 12345  # Porta do Unity
-server_address = (host, port)
+DEFAULT_PORT = 12345  # Porta do Unity
+server_address = (host, DEFAULT_PORT)
 
 BUFFER_SIZE = 1024 #Tamanho do pacote a ser recebido do Unity
 

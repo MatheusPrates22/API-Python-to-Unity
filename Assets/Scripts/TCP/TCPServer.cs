@@ -13,7 +13,6 @@ public class TCPServer : MonoBehaviour
     public static event EventHandler<string> OnReceiveCalled;
 
     [SerializeField] private int port = 12345;
-    [SerializeField] private KeyCode sendMessageKeyCode = KeyCode.S;
     public int maxPacketSize = 1024;
 
     private TcpListener server;
@@ -33,18 +32,19 @@ public class TCPServer : MonoBehaviour
         server.BeginAcceptTcpClient(AcceptClientCallback, null);
     }
 
-    private void AcceptClientCallback(System.IAsyncResult ar)
+    private void AcceptClientCallback(System.IAsyncResult asyncResult)
     {
         try
         {
             // Cliente conectado
-            client = server.EndAcceptTcpClient(ar);
+            client = server.EndAcceptTcpClient(asyncResult);
             stream = client.GetStream();
             Debug.Log("Cliente local conectado.");
 
             // Inicia a leitura assíncrona das mensagens do cliente
             buffer = new byte[maxPacketSize];
-            stream.BeginRead(buffer, 0, buffer.Length, ReceiveCallback, buffer);
+            stream.BeginRead(buffer, 0, buffer.Length, ReceiveCallback, null);
+            
 
             // Inicia a espera por novas conexões
             server.BeginAcceptTcpClient(AcceptClientCallback, null);
@@ -60,11 +60,14 @@ public class TCPServer : MonoBehaviour
     {
         // Lê a mensagem recebida do cliente
         int bytesRead = stream.EndRead(ar);
-        buffer = (byte[])ar.AsyncState;
+        // buffer = (byte[])ar.AsyncState;
+        buffer = new byte[client.ReceiveBufferSize];
         receivedMessage = Encoding.ASCII.GetString(buffer, 0, bytesRead);
 
         // Processa a mensagem recebida
-        OnReceiveCalled?.Invoke(this, receivedMessage);
+        Debug.Log("Receive Callback: " + receivedMessage);
+        // APIController.MessageReceived(receivedMessage);
+        // OnReceiveCalled?.Invoke(this, receivedMessage);
 
         // Reinicia a leitura assíncrona das mensagens
         stream.BeginRead(buffer, 0, buffer.Length, ReceiveCallback, null);
@@ -114,8 +117,19 @@ public class TCPServer : MonoBehaviour
     private void OnApplicationQuit()
     {
         // Fecha a conexão quando a aplicação é encerrada
-        stream.Close();
-        client.Close();
-        server.Stop();
+        if (stream != null)
+        {
+            stream.Close();
+        }
+
+        if (client != null)
+        {
+            client.Close();
+        }
+
+        if (server != null)
+        {
+            server.Stop();
+        }
     }
 }

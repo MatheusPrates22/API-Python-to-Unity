@@ -6,7 +6,7 @@ class Vector2:
         self.x = x
         self.y = y
 
-class Vector3():
+class Vector3:
     def __init__(self, x, y, z):
         self.x = x
         self.y = y
@@ -57,7 +57,7 @@ class Camera(Transform):
         self.__resolution = resolution
 
 
-class UnityAPI():
+class UnityAPI:
     def __init__(self, name: str, photoNumber: int, objectTransform: Transform, camera: Camera):
         self.__name = name
         self.__photoNumber = photoNumber
@@ -84,6 +84,17 @@ class UnityAPI():
         return json.dumps(self, default=lambda o: o.__dict__, 
             sort_keys=False, indent=4)
     
+class APIPythonUnityJsonFormat:
+    def __init__(self, message="", data: UnityAPI=None, take_screenshot=False) -> None:
+        # AO ADICIONAR ALGO AQUI, ADD NO UNITY TBM
+        self.message = message
+        if (data is not None):
+            self.data = data
+        self.takeScreenshot = take_screenshot
+
+
+
+# #-----------------TEST--------------------
 
 # #----------OBJECT----------
 # objectPosition = Vector3(0, 1, 2)
