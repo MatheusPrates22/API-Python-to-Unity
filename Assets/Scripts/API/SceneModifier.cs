@@ -23,7 +23,6 @@ public class SceneModifier : MonoBehaviour
     private void Update() {
         if (needChangesByPythonCall){
             MakeChangesToTheScene();
-            // StartCoroutine(TakeScreenshot());
             needChangesByPythonCall = false;
         }
     }
