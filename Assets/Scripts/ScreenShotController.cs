@@ -11,6 +11,7 @@ public class ScreenshotController : MonoBehaviour
     public static event EventHandler<Texture2D> OnScreenshotTaken;
 
     [SerializeField] private bool saveScreenshotOnLocal;
+    [SerializeField] private KeyCode takeScreenshotKeyCode = KeyCode.T;
     [SerializeField] private string pathToSaveScreenshot = "/Photos/ScreenshotUnity.png";
 
     private static bool needTakeScreenshot = false;
@@ -23,6 +24,10 @@ public class ScreenshotController : MonoBehaviour
         if (needTakeScreenshot) {
             Instance.StartCoroutine(TakeScreenshotCoroutine());
             needTakeScreenshot = false;
+        }
+        if (Input.GetKeyDown(takeScreenshotKeyCode)) {
+            saveScreenshotOnLocal = true;
+            Instance.StartCoroutine(TakeScreenshotCoroutine());
         }
     }
 

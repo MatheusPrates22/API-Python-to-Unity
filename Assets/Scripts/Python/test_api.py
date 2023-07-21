@@ -2,7 +2,7 @@ from data import UnityAPI, Camera, Transform, Vector3, Vector2
 from api import API
 
 #----------OBJECT----------
-objectPosition = Vector3(2, -1, 1)
+objectPosition = Vector3(-1.2, -1, -1)
 objectRotation = Vector3(-90, 0, 180)
 objectScale = Vector3(1, 1, 1)
 objectTransform = Transform(objectPosition, objectRotation, objectScale)
@@ -22,6 +22,7 @@ filename = r"imageAPI.png"
 my_api = API()
 # my_api = API(startConnection=False)
 # my_api.connect()
-# my_api.sendMessage("Test API")
-# my_api.sendUpdateScene(data)
-my_api.sceneSnapshot(data)
+# my_api.send_message("Test API")
+# my_api.send_update_scene(data)
+my_api.scene_snapshot(data, show=True)
+# my_api.take_screenshot(show=True)
