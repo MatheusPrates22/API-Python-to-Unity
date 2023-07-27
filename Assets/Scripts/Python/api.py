@@ -1,7 +1,7 @@
 import socket
 import json
 import os
-from data import APIData, Transform, UnityObject, Camera, Screenshot, Illumination
+from data import APIData, UnityObject, Camera, Screenshot, Illumination
 from config_manager import ConfigManager
 from rembg import remove as rembg_remove
 from PIL import Image
@@ -35,46 +35,43 @@ class API():
             else:
                 self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             self.socket.connect((self.host, self.port))
-            return True
+            self.__is_connect = True
         except socket.error as err:
-            print(f"Erro ao conectar: {err}")
-            return False
+            print(f"Failed to connect: {err}")
+            self.__is_connect = False
 
     def disconnect(self):
         if self.socket is not None:
             self.socket.close()
             self.socket = None
 
-    def is_connected(self):
-        return self.socket is not None
-
     def send_message(self, message: str):
-        print("Sending message")
         if self.__is_not_connected():
             return False
+        print("Sending message")
         json_data = APIData(message=message)
         self.__send_json(self.__to_json(json_data))
 
-    def send_update_object(self, unity_object: UnityObject = None):
+    def send_update_object(self, unity_object: UnityObject):
         self.send_update_scene(unity_object=unity_object)
 
-    def send_update_camera(self, camera: Camera = None):
+    def send_update_camera(self, camera: Camera):
         self.send_update_scene(camera=camera)
 
-    def send_update_Illumination(self, illumination: Illumination = None):
+    def send_update_Illumination(self, illumination: Illumination):
         self.send_update_scene(illumination=illumination)
 
     def send_update_scene(self, unity_object: UnityObject = None, camera: Camera = None, illumination: Illumination = None):
-        print("Send update scene")
         if self.__is_not_connected():
             return False
+        print("Send update scene")
         json_data = APIData(unity_object=unity_object, camera=camera, illumination=illumination)
         self.__send_json(self.__to_json(json_data))
         
-    def take_screenshot(self, screenshot: Screenshot = None, save_image=False, save_path: str | None = None, show=False) -> Image.Image:
-        print("Send take screenshot")
+    def take_screenshot(self, screenshot: Screenshot, save_image=False, save_path: str | None = None, show=False) -> Image.Image:
         if self.__is_not_connected():
             return False
+        print("Send take screenshot")
         json_data = APIData(screenshot=screenshot)
         self.__send_json(self.__to_json(json_data))
         #le a imagem recebida
@@ -93,9 +90,9 @@ class API():
         Returns:
         bytes: The bytes of the received image.
         """
-        print("Send scene snapshot")
         if self.__is_not_connected():
             return False
+        print("Send scene snapshot")
         
         # Converte para json e manda pro unity
         self.__send_json(self.__to_json(data_to_update_scene))
@@ -132,6 +129,15 @@ class API():
 
     ##### ----------------- PROPERTY'S -----------------
     @property
+    def is_connected(self):
+        return self.__is_connect
+
+    @is_connected.setter
+    def is_connected(self, value: bool):
+        if isinstance(value, bool):
+            self.__is_connect = value
+    
+    @property
     def image(self) -> Image.Image:
         return self.__image
     
@@ -158,7 +164,7 @@ class API():
 
         # Cria o diretório se não existir
         if not os.path.exists(filepath):
-            print(f"Diretório criado: {filepath}")
+            print(f"Directory created: {filepath}")
             os.makedirs(filepath)
 
         # Atualiza o atributo
@@ -227,15 +233,6 @@ class API():
                 break
         return image_data
 
-    def __change_object(self, object: str):
-        ...
-
-    def __change_object_transform(self, transform: Transform):
-        ...
-
-    def __change_camera_transform(self, transform: Transform):
-        ...
-
     def __to_json(self, data: APIData) -> str:
         return json.dumps(data, default=lambda o: o.__dict__, 
             sort_keys=False, indent=4)
@@ -266,8 +263,8 @@ class API():
         self.image_abs_filepath = None
 
     def __is_not_connected(self):
-        if not self.is_connected():
-            print("A conexão não está estabelecida.")
+        if not self.is_connected:
+            print("Connection is not established.")
             return True
         return False
     

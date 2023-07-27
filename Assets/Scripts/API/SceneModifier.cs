@@ -71,7 +71,10 @@ public class SceneModifier : MonoBehaviour
             Debug.Log("No asset path specified");
             GameObject prefabGO = GLBLoader.LoadDefaultGLB();
             objectToChangeTransform = prefabGO.transform;
+        } else {
+            objectToChangeTransform.gameObject.SetActive(true);
         }
+
         if(objectToChangeTransform != null) {
             objectToChangeTransform.position = _myObjectData.position;
             // objectToChangeTransform.Rotate(dataAPI._UnityAPI__objectTransform._Transform__rotation);
@@ -94,5 +97,6 @@ public class SceneModifier : MonoBehaviour
     private void UpdateAtIllumination() {
         lightToChange.transform.rotation = Quaternion.Euler(_myIlluminationData.rotation);
         lightToChange.intensity = _myIlluminationData.intensity;
+        lightToChange.color = new Color(_myIlluminationData.color.x, _myIlluminationData.color.y, _myIlluminationData.color.z);
     }
 }

@@ -1,9 +1,9 @@
 {
     "unity_object": {
         "position": {
-            "x": 1.2,
-            "y": -1,
-            "z": -1
+            "x": 0,
+            "y": 0,
+            "z": 0
         },
         "rotation": {
             "x": -90,
@@ -21,7 +21,7 @@
         "position": {
             "x": 0,
             "y": 0,
-            "z": -3.17
+            "z": -5
         },
         "rotation": {
             "x": 0,
@@ -39,7 +39,11 @@
             "y": 1080
         }
     },
-    "screenshot": null,
+    "screenshot": {
+        "take_screenshot": true,
+        "remove_background": true,
+        "tolerance": 0.7
+    },
     "illumination": {
         "position": {
             "x": 0,
@@ -56,11 +60,16 @@
             "y": 1,
             "z": 1
         },
-        "intensity": 2.0
+        "intensity": 3.0,
+        "color": {
+            "x": 0,
+            "y": 1,
+            "z": 1
+        }
     },
     "message": null,
     "_APIData__update_unity_object": true,
     "_APIData__update_camera": true,
-    "_APIData__update_screenshot": false,
+    "_APIData__update_screenshot": true,
     "_APIData__update_illumination": true
 }

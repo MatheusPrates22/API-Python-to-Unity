@@ -63,6 +63,7 @@ public class MyIlluminationData
 {
     public Vector3 rotation;
     public float intensity;
+    public Vector3 color;
 }
 
 [System.Serializable]

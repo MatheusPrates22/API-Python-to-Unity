@@ -32,9 +32,10 @@ class Camera(Transform):
         
 
 class Illumination(Transform):
-    def __init__(self, transform: Transform, intensity: float = 2.0):
+    def __init__(self, transform: Transform, intensity: float = 2.0, color: Vector3 = Vector3(255, 255, 255)):
         super().__init__(transform.position, transform.rotation, transform.scale)
         self.intensity = intensity
+        self.color = color
 
 
 class Screenshot:
