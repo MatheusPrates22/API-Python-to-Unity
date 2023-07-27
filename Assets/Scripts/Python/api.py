@@ -1,19 +1,21 @@
 import socket
 import json
-from os import path
-from data import APIPythonUnityJsonFormat, UnityAPI, Transform
+import os
+from data import APIData, Transform, UnityObject, Camera, Screenshot, Illumination
 from config_manager import ConfigManager
 from rembg import remove as rembg_remove
 from PIL import Image
 from io import BytesIO
 from typing import Union
 
+
 class API():
+    __SAVE_SEND_JSON = True
+
     def __init__(self, start_connection = True, image_filepath=None, image_filename=None):
         self.__image = None
         self.__init_config_manager()
-        self.set_image_filepath(image_filepath)
-        self.set_image_filename(image_filename)
+        self.__init_paths(image_filepath, image_filename)
         if start_connection:
             self.connect()
 
@@ -46,119 +48,138 @@ class API():
     def is_connected(self):
         return self.socket is not None
 
-    def send_message(self, message: str, save_json=False):
+    def send_message(self, message: str):
         print("Sending message")
         if self.__is_not_connected():
             return False
-        json_data = json.dumps(APIPythonUnityJsonFormat(message=message).__dict__)
-        self.__send_json(json_data, save_json=save_json)
+        json_data = APIData(message=message)
+        self.__send_json(self.__to_json(json_data))
 
-    def send_update_scene(self, data_to_update_scene: UnityAPI, save_json=False):
+    def send_update_scene(self, unity_object: UnityObject = None, camera: Camera = None, illumination: Illumination = None):
         print("Send update scene")
         if self.__is_not_connected():
             return False
-        json_data = json.dumps(APIPythonUnityJsonFormat(data=data_to_update_scene.toJson()).__dict__)
-        self.__send_json(json_data, save_json=save_json)
+        json_data = APIData(unity_object=unity_object, camera=camera, illumination=illumination)
+        self.__send_json(self.__to_json(json_data))
         
-    def take_screenshot(self, save_json=False, save_image: bool=False, save_path: str=None, show: bool=False) -> Image.Image:
+    def take_screenshot(self, screenshot: Screenshot = None, save_image=False, save_path: str | None = None, show=False) -> Image.Image:
         print("Send take screenshot")
         if self.__is_not_connected():
             return False
-        #Converte para json e manda pro unity
-        json_data = json.dumps(APIPythonUnityJsonFormat(take_screenshot=True).__dict__)
-        self.__send_json(json_data, save_json=save_json)
+        json_data = APIData(screenshot=screenshot)
+        self.__send_json(self.__to_json(json_data))
         #le a imagem recebida
-        image = self.__read_image_bytes_received()
-        if save_image:
-            self.save_image(image, save_path)
-        if show:
-            image.show()
-        return image
+        return self.__read_image_bytes_received(save_image=save_image, save_filename=save_path, show=show)
 
-    def remove_image_background(self, image_path: str | Image.Image, save: bool=False, save_path: str=None, show: bool=False) -> Image.Image:
-        try:
-            if isinstance(image_path, str):
-                image = Image.open(image_path)
-                self.set_image(image)
-            else:
-                image = self.set_image(image_path)
-            image_without_background = self.set_image_without_background(rembg_remove(image))
-            if save:
-                self.save_image(image_without_background, save_path)
-            if show:
-                image_without_background.show()
-            return image_without_background
-        except Exception as e:
-            print("Erro ao remover o background da imagem: " + e)
+    def scene_snapshot(self, data_to_update_scene: APIData, save_image=False, save_filename: str | None = None, show=False):
+        """
+        Performs changes in the Unity scene, takes a snapshot of the scene, and removes the background.
 
-    def take_screenshot_and_remove_background(self, save_json: bool=False, save_image: bool=False, save_path: str=None, show: bool=False) -> Image.Image:
-        image = self.set_image(self.take_screenshot(save_json=save_json))
-        return self.set_image_without_background(self.remove_image_background(image_path=image, save=save_image, save_path=save_path, show=show))
+        Parameters:
+        data_to_update_scene (UnityAPI): Instance of the UnityAPI class containing the data to update the scene in Unity.
+        save_image (bool, optional): Defines whether the received image should be saved in PNG format (default is False).
+        save_filename (str or None, optional): File name to save the image. If set to None (default), the filename will be automatically set to "imageAPI.png".
+        show (bool, optional): Defines whether the image should be displayed (default is False).
 
-    def scene_snapshot(self, data_to_update_scene: UnityAPI, save_json=False, save_image: bool=False, save_path: str=None, show: bool=False):
+        Returns:
+        bytes: The bytes of the received image.
+        """
         print("Send scene snapshot")
         if self.__is_not_connected():
             return False
-        #Converte para json e manda pro unity
-        json_data = json.dumps(APIPythonUnityJsonFormat(data=data_to_update_scene.toJson(), take_screenshot=True).__dict__)
-        self.__send_json(json_data, save_json=save_json)
-        #le a imagem recebida
-        image = self.__read_image_bytes_received()
-        #remove background da imagem recebida
-        return self.remove_image_background(image, save=save_image, save_path=save_path, show=show)
+        
+        # Converte para json e manda pro unity
+        self.__send_json(self.__to_json(data_to_update_scene))
+        
+        # Le a imagem recebida
+        return self.__read_image_bytes_received(save_image=save_image, save_filename=save_filename, show=show)
 
-    def save_image(self, image: Image.Image, save_path: str=None):
-        if save_path is None:
-            save_path = self.image_abs_filepath()
-        image.save(save_path)
+    def save_image(self, image: Image.Image, save_filename: str = None) -> None:
+        if save_filename is not None and isinstance(save_filename, str):
+            self.image_filename = save_filename
+        image.save(self.image_abs_filepath)
+        # self.image = Image.open(save_filename)
 
+    def load_image(self, imagePath: str) -> None:
+        self.image = Image.open(imagePath)
 
+    def show_image(self, title: str | None = None) -> None:
+        if title is None:
+            title = self.image_filename
+        self.image.show(title)
+
+    def remove_image_background_using_python(self, image_path: str | Image.Image, save=False, save_path: str| None = None, show=False) -> Image.Image:
+        try:
+            if isinstance(image_path, str):
+                image_path = Image.open(image_path)
+            self.image = rembg_remove(image_path)
+            if save:
+                self.save_image(self.image, save_path)
+            if show:
+                self.show_image(self.image_filename)
+            return self.image
+        except Exception as e:
+            print("Erro ao remover o background da imagem: " + e)
+
+    ##### ----------------- PROPERTY'S -----------------
+    @property
     def image(self) -> Image.Image:
         return self.__image
     
-    def set_image(self, image: Image.Image) -> Image.Image:
+    @image.setter
+    def image(self, image: Image.Image) -> Image.Image:
         if isinstance(image, Image.Image):
             self.__image = image
             return self.__image
 
-    def image_without_background(self) -> Image.Image:
-        return self.__image_without__background
-
-    def set_image_without_background(self, image: Image.Image) -> Image.Image:
-        if isinstance(image, Image.Image):
-            self.__image_without__background = image
-            return self.__image_without__background
-
+    @property
     def image_filepath(self) -> str:
         if self.__image_filepath is None:
-            self.set_image_filepath()
+            self.image_filepath = None
         return self.__image_filepath
 
-    def set_image_filepath(self, filepath: str=None) -> str:
+    @image_filepath.setter
+    def image_filepath(self, filepath: str=None) -> None:
+        # Caminho relativo padrão
         if filepath is None:
-            filepath = path.join("Assets", "Photos")
-        self.__image_filepath = filepath
-        return self.__image_filepath
+            filepath = os.path.join("Assets", "Photos")
 
+        # Converte para caminho absoluto
+        filepath = os.path.abspath(filepath)
+
+        # Cria o diretório se não existir
+        if not os.path.exists(filepath):
+            print(f"Diretório criado: {filepath}")
+            os.makedirs(filepath)
+
+        # Atualiza o atributo
+        self.__image_filepath = filepath
+        self.image_abs_filepath = None
+
+    @property
     def image_filename(self) -> str:
         if self.__image_filename is None:
-            self.set_image_filename()
+            self.image_filename = None
         return self.__image_filename
     
-    def set_image_filename(self, filename: str=r"imageAPI.png") -> str:
+    @image_filename.setter
+    def image_filename(self, filename: str=None) -> None:
+        if filename is None:
+            filename = r"imageAPI.png"
         self.__image_filename = filename
-        return self.__image_filename
+        self.image_abs_filepath = None
 
+    @property
     def image_abs_filepath(self) -> str:
         if self.__image_abs_filepath is None:
-            self.set_image_abs_filepath()
+            self.image_abs_filepath = None
         return self.__image_abs_filepath
 
-    def set_image_abs_filepath(self, abs_filepath: str=None) -> str:
+    @image_abs_filepath.setter
+    def image_abs_filepath(self, abs_filepath: str=None) -> None:
         if abs_filepath is None:
-            abs_filepath = path.join(self.image_filepath(), self.image_filename())
+            abs_filepath = os.path.join(self.image_filepath, self.image_filename)
         self.__image_abs_filepath = abs_filepath
-        return self.__image_abs_filepath
 
     def __save_image_bytes(self, data_bytes: bytes, filepath: str=None):
         if filepath is None:
@@ -166,11 +187,22 @@ class API():
         with open(filepath, "wb") as file:
             file.write(data_bytes)
 
-    def __read_image_bytes_received(self) -> Image.Image:
+    ##### ----------------- END PROPERTY'S -----------------
+
+    ##### ----------------- PRIVATE METHODS -----------------
+    def __read_image_bytes_received(self, save_image: bool=False, save_filename: str=None, show: bool=False) -> Image.Image:
         image_bytes = self.__read_bytes_received()
-        #converte para uma Imagem
+
+        # Converte para uma Imagem
         image_bytes_io = BytesIO(image_bytes)
-        return self.set_image(Image.open(image_bytes_io))
+        self.image = Image.open(image_bytes_io)
+
+        # Salva e mostra se necessário
+        if save_image:
+            self.save_image(self.image, save_filename)
+        if show:
+            self.show_image(self.image_filename)
+        return self.image
 
     def __read_bytes_received(self) -> bytes:
         data_received, _ = self.socket.recvfrom(self.__config_manager.buffer_size)
@@ -179,15 +211,12 @@ class API():
         image_data = b""
         while True:
             if amount_of_packages > 0:
-                data_received, addr = self.socket.recvfrom(self.__config_manager.buffer_size)
+                data_received, _ = self.socket.recvfrom(self.__config_manager.buffer_size)
                 image_data += data_received
                 amount_of_packages  = amount_of_packages - 1
             else:
                 break
         return image_data
-
-    def ___read_image(self, imagePath):
-        ...
 
     def __change_object(self, object: str):
         ...
@@ -198,8 +227,12 @@ class API():
     def __change_camera_transform(self, transform: Transform):
         ...
 
-    def __send_json(self, json_data: str, save_json=False):
-        if save_json:
+    def __to_json(self, data: APIData) -> str:
+        return json.dumps(data, default=lambda o: o.__dict__, 
+            sort_keys=False, indent=4)
+
+    def __send_json(self, json_data: str):
+        if self.__SAVE_SEND_JSON:
             self.__save_json(json_data)
         data_bytes = json_data.encode()
         self.__send_bytes(data_bytes)
@@ -214,7 +247,14 @@ class API():
         self.port = None
         self.protocol = None
         self.__config_manager = ConfigManager()
-        self.__config_manager.load_config(path.join(path.dirname(__file__),'configAPI.json'))
+        self.__config_manager.load_config(os.path.join(os.path.dirname(__file__),'configAPI.json'))
+
+    def __init_paths(self, image_filepath, image_filename):
+        self.__image_filepath = None
+        self.__image_filename = None
+        self.image_filepath = image_filepath
+        self.image_filename = image_filename
+        self.image_abs_filepath = None
 
     def __is_not_connected(self):
         if not self.is_connected():
@@ -223,7 +263,7 @@ class API():
         return False
     
     def __save_json(self, my_json: str, filename = 'api.json'):
-        path_to_save = path.join(path.dirname(__file__), filename)
+        path_to_save = os.path.join(os.path.dirname(__file__), filename)
         with open(path_to_save, 'w') as arquivo_json:
             arquivo_json.write(my_json)
 

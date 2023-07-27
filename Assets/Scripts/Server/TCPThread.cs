@@ -52,7 +52,7 @@ public class TCPThread : MonoBehaviour
 							// Convert byte array to string message. 							
 							string clientMessage = Encoding.ASCII.GetString(incommingData); 							
 							// Debug.Log("client message received as: " + clientMessage);
-                            APIController.ReceiveJsonString(clientMessage); 						
+                            APIController.ReadAPIJsonFile(clientMessage); 						
 						} 					
 					} 				
 				} 			

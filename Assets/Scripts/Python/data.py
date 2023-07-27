@@ -1,10 +1,8 @@
-import json
-
-
 class Vector2:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+
 
 class Vector3:
     def __init__(self, x, y, z):
@@ -12,85 +10,52 @@ class Vector3:
         self.y = y
         self.z = z
 
+
 class Transform:
     def __init__(self, position = Vector3(0, 0, 0), rotation = Vector3(0, 0, 0), scale = Vector3(1, 1, 1)):
-        self.__position = position
-        self.__rotation = rotation
-        self.__scale = scale
+        self.position = position
+        self.rotation = rotation
+        self.scale = scale
 
-    def setPosition(self, position: Vector3):
-        self.__position = position
 
-    def position(self) -> Vector3:
-        return self.__position
-
-    def setRotation(self, rotation: Vector3):
-        self.__rotation = rotation
-
-    def rotation(self) -> Vector3:
-        return self.__rotation
-    
-    def setScale(self, scale: Vector3):
-        self.__scale = scale
-
-    def scale(self) -> Vector3:
-        return self.__scale
+class UnityObject(Transform):
+    def __init__(self, transform: Transform, path: str = None):
+        super().__init__(transform.position, transform.rotation, transform.scale)
+        self.path = path
 
 
 class Camera(Transform):
     def __init__(self, transform: Transform, fov: float, resolution: Vector2):
-        super().__init__(transform.position(), transform.rotation(), transform.scale())
-        # self.__transform = transform
-        self.__fov = fov
-        self.__resolution = resolution
+        super().__init__(transform.position, transform.rotation, transform.scale)
+        self.fov = fov
+        self.resolution = resolution
+        
 
-    # def setTransform(self, transform: Transform):
-    #     self.__transform = transform
-
-    # def transform(self):
-    #     return self.__transform
-
-    def setFov(self, fov: float):
-        self.__fov = fov
-
-    def setResolution(self, resolution: Vector2):
-        self.__resolution = resolution
+class Illumination(Transform):
+    def __init__(self, transform: Transform, intensity: float = 2.0):
+        super().__init__(transform.position, transform.rotation, transform.scale)
+        self.intensity = intensity
 
 
-class UnityAPI:
-    def __init__(self, name: str, photoNumber: int, objectTransform: Transform, camera: Camera):
-        self.__name = name
-        self.__photoNumber = photoNumber
-        self.__objectTransform = objectTransform
-        self.__camera = camera
+class Screenshot:
+    def __init__(self, take_screenshot, remove_background=True, tolerance=0.7) -> None:
+        self.take_screenshot = take_screenshot
+        self.remove_background = remove_background
+        self.tolerance = tolerance
 
-    def setObjectTransform(self, position: Vector3, rotation: Vector3, scale: Vector3):
-        self.__objectTransform.setPosition(position)
-        self.__objectTransform.setRotation(rotation)
-        self.__objectTransform.setScale(scale)
 
-    def setCameraTransform(self, position: Vector3, rotation: Vector3, scale: Vector3):
-        self.__camera.setPosition(position)
-        self.__camera.setRotation(rotation)
-        self.__camera.setScale(scale)
-
-    def setCameraPosition(self, position: Vector3):
-        self.__camera.setPosition(position)
-
-    def setCameraRotation(self, rotation: Vector3):
-        self.__camera.setRotation(rotation)
-
-    def toJson(self):
-        return json.dumps(self, default=lambda o: o.__dict__, 
-            sort_keys=False, indent=4)
-    
-class APIPythonUnityJsonFormat:
-    def __init__(self, message="", data: UnityAPI=None, take_screenshot=False) -> None:
-        # AO ADICIONAR ALGO AQUI, ADD NO UNITY TBM
+class APIData:
+    def __init__(self, unity_object: UnityObject = None, camera: Camera = None, screenshot: Screenshot = None, illumination: Illumination = None, message: str | None = None):
+        # AO ADICIONAR ALGO AQUI, ADD NO UNITY TBM -APIPythonUnityJsonFormat.cs-
+        self.unity_object = unity_object
+        self.camera = camera
+        self.screenshot = screenshot
+        self.illumination = illumination
         self.message = message
-        if (data is not None):
-            self.data = data
-        self.takeScreenshot = take_screenshot
+        self.__update_unity_object = True if unity_object is not None else False
+        self.__update_camera = True if camera is not None else False
+        self.__update_screenshot = True if screenshot is not None else False
+        self.__update_illumination = True if illumination is not None else False
 
 
 

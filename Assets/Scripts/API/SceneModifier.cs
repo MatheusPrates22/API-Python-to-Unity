@@ -8,49 +8,75 @@ public class SceneModifier : MonoBehaviour
     public static SceneModifier Instance;
 
     [Header("Python")]
+
     [Header("Object")]
     [SerializeField] private Transform objectToChangeTransform;
+
     [Header("Camera")]
     [SerializeField] private Camera cameraToChange;
 
-    private static DataAPI dataAPI;
-    private static bool needChangesByPythonCall = false;
+    [Header("Illumination")]
+    [SerializeField] private Light lightToChange;
+
+    private static MyObjectData _myObjectData;
+    private static MyCameraData _myCameraData;
+    private static MyIlluminationData _myIlluminationData;
+    private static bool needUpdateObject;
+    private static bool needUpdateCamera;
+    private static bool needUpdateIllumination;
 
     private void Awake() {
         if (Instance == null) Instance = this; else Destroy(Instance);
     }
 
     private void Update() {
-        if (needChangesByPythonCall){
-            MakeChangesToTheScene();
-            needChangesByPythonCall = false;
+        if (needUpdateObject){
+            UpdateAtObject();
+            needUpdateObject = false;
+        }
+        if (needUpdateCamera){
+            UpdateAtCamera();
+            needUpdateCamera = false;
+        }
+        if (needUpdateIllumination){
+            UpdateAtIllumination();
+            needUpdateIllumination = false;
         }
     }
 
-    public static void UpdateScene(DataAPI dataAPI_to_update) {
-        dataAPI = dataAPI_to_update;
-        needChangesByPythonCall = true;
+    public static void NeedUpdateObject(MyObjectData myObject) {
+        _myObjectData = myObject;
+        needUpdateObject = true;
     }
 
-    private void MakeChangesToTheScene() {
-        ChangeObjectTransform(dataAPI._UnityAPI__objectTransform);
-        ChangeCameraSettings(dataAPI._UnityAPI__camera);
+    public static void NeedUpdateCamera(MyCameraData myCamera) {
+        _myCameraData = myCamera;
+        needUpdateCamera = true;
     }
 
-    private void ChangeObjectTransform(MyTransform unityAPI__objectTransform) {
-        objectToChangeTransform.position = dataAPI._UnityAPI__objectTransform._Transform__position;
+    public static void NeedUpdateIllumination(MyIlluminationData myIllumination) {
+        _myIlluminationData = myIllumination;
+        needUpdateIllumination = true; 
+    }
+
+    private void UpdateAtObject() {
+        objectToChangeTransform.position = _myObjectData.position;
         // objectToChangeTransform.Rotate(dataAPI._UnityAPI__objectTransform._Transform__rotation);
         // objectToChangeTransform.eulerAngles = dataAPI._UnityAPI__objectTransform._Transform__rotation;
-        objectToChangeTransform.rotation = Quaternion.Euler(dataAPI._UnityAPI__objectTransform._Transform__rotation);
-        objectToChangeTransform.localScale = dataAPI._UnityAPI__objectTransform._Transform__scale;
+        objectToChangeTransform.rotation = Quaternion.Euler(_myObjectData.rotation);
+        objectToChangeTransform.localScale = _myObjectData.scale;
     }
 
-    private void ChangeCameraSettings(MyCamera unityAPI__camera)
-    {
-        cameraToChange.transform.position = unityAPI__camera._Transform__position;
-        cameraToChange.transform.rotation = Quaternion.Euler(unityAPI__camera._Transform__rotation);
-        cameraToChange.transform.localScale = unityAPI__camera._Transform__scale;
-        cameraToChange.fieldOfView = unityAPI__camera._Camera__fov;
-        Screen.SetResolution((int)unityAPI__camera._Camera__resolution.x, (int)unityAPI__camera._Camera__resolution.y, false);
+    private void UpdateAtCamera() {
+        cameraToChange.transform.position = _myCameraData.position;
+        cameraToChange.transform.rotation = Quaternion.Euler(_myCameraData.rotation);
+        cameraToChange.transform.localScale = _myCameraData.scale;
+        cameraToChange.fieldOfView = _myCameraData.fov;
+        Screen.SetResolution((int)_myCameraData.resolution.x, (int)_myCameraData.resolution.y, false);
+    }
+
+    private void UpdateAtIllumination() {
+        lightToChange.transform.rotation = Quaternion.Euler(_myIlluminationData.rotation);
+        lightToChange.intensity = _myIlluminationData.intensity;
     }
 }

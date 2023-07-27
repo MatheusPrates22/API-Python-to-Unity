@@ -16,15 +16,18 @@ public class APIController : MonoBehaviour
     [SerializeField] private GameObject tcpServerGO;
     [SerializeField] private GameObject updServerGO;
     [SerializeField] private bool showJsonString;
+    [SerializeField] private bool printStage;
 
-    private static string protocol;
+    private static string _protocol;
+    private static bool _needRemoveBackground;
+    private static float _tolerance;
 
     private void Awake() {
         if (Instance == null) Instance = this; else Destroy(Instance);
         transform.eulerAngles = new Vector3(0, 45, 20);
         transform.rotation =  Quaternion.Euler(new Vector3(10, 5, 2));
         ReadConfigJsonFile();
-        EnableServer(protocol);
+        EnableServer(_protocol);
 
     }
 
@@ -37,43 +40,57 @@ public class APIController : MonoBehaviour
     }
 
     #region JSON RECEIVED
-    public static void ReceiveJsonString(string jsonReceived) {
+    public static void ReadAPIJsonFile(string jsonReceived) {
         if (Instance.showJsonString) {
             Debug.Log(jsonReceived);
         }
         try {
-            APIPythonUnityJsonFormat unityAPIInfo = JsonUtility.FromJson<APIPythonUnityJsonFormat>(jsonReceived);
-            ShowMessage(unityAPIInfo.message);
-            UpdateScene(unityAPIInfo.data);
-            TakeScreenshot(unityAPIInfo.takeScreenshot);
+            APIData apiData = JsonUtility.FromJson<APIData>(jsonReceived);
+            ShowMessage(apiData.message);
+            UpdateScene(apiData);
+            TakeScreenshot(apiData.screenshot);
+            // TakeScreenshot(apiData.take_screenshot, apiData.remove_background, apiData.tolerance);
         } catch (Exception e) {
             Debug.Log("Exception in change string to json: " + e.Message);
         }
     }
 
     private static void ShowMessage(string message) {
-        if (message != "") {
+        if (!string.IsNullOrEmpty(message)) {
             Debug.Log("Message: " + message);
         }
     }
 
-    private static void UpdateScene(string data) {
-        if (!string.IsNullOrEmpty(data)) {
-            DataAPI dataAPI = JsonUtility.FromJson<DataAPI>(data);
-            SceneModifier.UpdateScene(dataAPI);
+    private static void UpdateScene(APIData apiData) {
+        if (apiData._APIData__update_unity_object) {
+            if (Instance.printStage) Debug.Log("Updating object");
+            SceneModifier.NeedUpdateObject(apiData.unity_object);
+        }
+        if (apiData._APIData__update_camera) {
+            if (Instance.printStage) Debug.Log("Updating camera");
+            SceneModifier.NeedUpdateCamera(apiData.camera);
+        }
+        if (apiData._APIData__update_illumination) {
+            if (Instance.printStage) Debug.Log("Updating illumination");
+            SceneModifier.NeedUpdateIllumination(apiData.illumination);
         }
     }
 
-    private static void TakeScreenshot(bool takeScreenshot) {
-        if (takeScreenshot) {
+    private static void TakeScreenshot(MyScreenshotData myScreenshot) {
+        if (myScreenshot.take_screenshot) {
+            if (Instance.printStage) Debug.Log("Taking screenshot");
+            _needRemoveBackground = myScreenshot.remove_background;
+            _tolerance = myScreenshot.tolerance;
             ScreenshotController.TakeScreenshot();
-            Debug.Log("Taking screenshot");
         }
     }
     #endregion
 
     private void ScreenshotController_OnScreenshotTaken(object sender, Texture2D screenshotTexture)
     {
+        if (_needRemoveBackground) {
+            screenshotTexture = RemoveImageBackground.RemoveBackground(screenshotTexture, tolerance: _tolerance);
+        }
         TCPThread.SendTexture(screenshotTexture);
     }
 
@@ -89,7 +106,7 @@ public class APIController : MonoBehaviour
 
             host = configData.host;
             port = configData.port;
-            protocol = configData.protocol;
+            _protocol = configData.protocol;
             bufferSize = configData.buffer_size;
         } catch (Exception e) {
             Debug.Log("Exception on read json config file. Error: " + e.Message);

@@ -154,7 +154,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 582527826}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &155349785
 MonoBehaviour:
@@ -540,6 +540,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 582527826}
+  - component: {fileID: 582527827}
   m_Layer: 0
   m_Name: ====SOCKETS====
   m_TagString: Untagged
@@ -559,12 +560,27 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1506214568}
   - {fileID: 155349784}
   - {fileID: 1248173158}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &582527827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 582527825}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcf6ee6f304fa7a468a98df33bea02e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tcpServerGO: {fileID: 155349783}
+  updServerGO: {fileID: 1248173157}
+  showJsonString: 0
+  printStage: 0
 --- !u!1 &604143348
 GameObject:
   m_ObjectHideFlags: 0
@@ -618,6 +634,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectToChangeTransform: {fileID: 1039140251}
   cameraToChange: {fileID: 330585545}
+  lightToChange: {fileID: 410087040}
 --- !u!1001 &791835793
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1156,12 +1173,12 @@ PrefabInstance:
     - target: {fileID: -7332379768788144206, guid: d9d230716fdd98c4eb8548ba0161b350,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -7058843574742113241, guid: d9d230716fdd98c4eb8548ba0161b350,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -5609321221556402741, guid: d9d230716fdd98c4eb8548ba0161b350,
         type: 3}
@@ -1182,47 +1199,47 @@ PrefabInstance:
     - target: {fileID: -5609321221556402741, guid: d9d230716fdd98c4eb8548ba0161b350,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -2798171363554644830, guid: d9d230716fdd98c4eb8548ba0161b350,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -2053669945944039257, guid: d9d230716fdd98c4eb8548ba0161b350,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -1680290878455333814, guid: d9d230716fdd98c4eb8548ba0161b350,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -456396541701893619, guid: d9d230716fdd98c4eb8548ba0161b350,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -141267807044361841, guid: d9d230716fdd98c4eb8548ba0161b350,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2791603882371234830, guid: d9d230716fdd98c4eb8548ba0161b350,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3070510607900363604, guid: d9d230716fdd98c4eb8548ba0161b350,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3201775125734381835, guid: d9d230716fdd98c4eb8548ba0161b350,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5146681718063874739, guid: d9d230716fdd98c4eb8548ba0161b350,
         type: 3}
@@ -1282,12 +1299,12 @@ PrefabInstance:
     - target: {fileID: 6816750273558794272, guid: d9d230716fdd98c4eb8548ba0161b350,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9099741769027479969, guid: d9d230716fdd98c4eb8548ba0161b350,
         type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 9199261849990390558, guid: d9d230716fdd98c4eb8548ba0161b350,
@@ -1328,7 +1345,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 582527826}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1248173159
 MonoBehaviour:
@@ -1374,14 +1391,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   openAfterSave: 1
-  takeScreenshotKeyCode: 116
-  removeBackgroundKeyCode: 98
-  saveScreenshotKeyCode: 115
-  sceneSnapshotKeyCode: 121
+  takeScreenshotKeyCode: 113
+  removeBackgroundKeyCode: 119
+  saveScreenshotKeyCode: 101
+  sceneSnapshotKeyCode: 114
   savePath: \Photos\screenshotSaveUnity.png
   colorToChange: {r: 0, g: 0, b: 0, a: 0}
   backgroundColor: {r: 1, g: 0, b: 1, a: 1}
   tolerance: 0.7
+  changeIlluminationKeyCode: 97
+  rotationIllumination: {x: 50, y: -60, z: 0}
+  intensityIllumination: 3
 --- !u!4 &1448552273
 Transform:
   m_ObjectHideFlags: 0
@@ -1406,8 +1426,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1468578220}
+  - component: {fileID: 1468578221}
   m_Layer: 0
-  m_Name: ====IMAGE CONTROLLERS====
+  m_Name: ====SCREENSHOT====
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1425,58 +1446,24 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1809102645}
   - {fileID: 1635644060}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1506214567
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1506214568}
-  - component: {fileID: 1506214569}
-  m_Layer: 0
-  m_Name: API Controller
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1506214568
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1506214567}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 582527826}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1506214569
+--- !u!114 &1468578221
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1506214567}
+  m_GameObject: {fileID: 1468578219}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bcf6ee6f304fa7a468a98df33bea02e6, type: 3}
+  m_Script: {fileID: 11500000, guid: 8f96e98d4a0711943a844eb00ef7f5db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tcpServerGO: {fileID: 155349783}
-  updServerGO: {fileID: 1248173157}
-  showJsonString: 0
+  saveScreenshotOnLocal: 0
+  pathToSaveScreenshot: /Photos/ScreenshotUnity.png
 --- !u!1 &1635644059
 GameObject:
   m_ObjectHideFlags: 0
@@ -1507,7 +1494,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1468578220}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1635644061
 MonoBehaviour:
@@ -1524,50 +1511,3 @@ MonoBehaviour:
   colorToChange: {r: 0, g: 0, b: 0, a: 0}
   backgroundColor: {r: 1, g: 0, b: 1, a: 1}
   tolerance: 0.7
---- !u!1 &1809102643
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1809102645}
-  - component: {fileID: 1809102646}
-  m_Layer: 0
-  m_Name: Screenshot Controller
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1809102645
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1809102643}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -3.38}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1468578220}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1809102646
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1809102643}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f96e98d4a0711943a844eb00ef7f5db, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  saveScreenshotOnLocal: 0
-  takeScreenshotKeyCode: 116
-  pathToSaveScreenshot: /Photos/ScreenshotUnity.png

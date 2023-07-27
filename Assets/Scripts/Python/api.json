@@ -1,1 +1,45 @@
-{"message": "", "data": "{\n    \"_UnityAPI__name\": \"Pessoa\",\n    \"_UnityAPI__photoNumber\": 1,\n    \"_UnityAPI__objectTransform\": {\n        \"_Transform__position\": {\n            \"x\": 1,\n            \"y\": -1,\n            \"z\": 0\n        },\n        \"_Transform__rotation\": {\n            \"x\": -90,\n            \"y\": 35,\n            \"z\": 180\n        },\n        \"_Transform__scale\": {\n            \"x\": 1,\n            \"y\": 1,\n            \"z\": 1\n        }\n    },\n    \"_UnityAPI__camera\": {\n        \"_Transform__position\": {\n            \"x\": 0,\n            \"y\": 0,\n            \"z\": -3.17\n        },\n        \"_Transform__rotation\": {\n            \"x\": 0,\n            \"y\": 0,\n            \"z\": 0\n        },\n        \"_Transform__scale\": {\n            \"x\": 1,\n            \"y\": 1,\n            \"z\": 1\n        },\n        \"_Camera__fov\": 60,\n        \"_Camera__resolution\": {\n            \"x\": 1920,\n            \"y\": 1080\n        }\n    }\n}", "takeScreenshot": false}
+{
+    "unity_object": {
+        "position": {
+            "x": 1.2,
+            "y": -1,
+            "z": -1
+        },
+        "rotation": {
+            "x": -90,
+            "y": 0,
+            "z": 180
+        },
+        "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+        },
+        "path": null
+    },
+    "camera": null,
+    "screenshot": null,
+    "illumination": {
+        "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "rotation": {
+            "x": 50,
+            "y": -60,
+            "z": 0
+        },
+        "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+        },
+        "intensity": 2.0
+    },
+    "message": null,
+    "_APIData__update_unity_object": true,
+    "_APIData__update_camera": false,
+    "_APIData__update_screenshot": false,
+    "_APIData__update_illumination": true
+}
