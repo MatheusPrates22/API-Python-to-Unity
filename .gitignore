@@ -75,4 +75,5 @@ crashlytics-build.properties
 GLB/
 Photos/
 Assets/Photos/
+Prefabs/GLBs/
 *.png

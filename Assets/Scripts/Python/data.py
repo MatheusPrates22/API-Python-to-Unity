@@ -19,9 +19,9 @@ class Transform:
 
 
 class UnityObject(Transform):
-    def __init__(self, transform: Transform, path: str = None):
+    def __init__(self, transform: Transform, asset_path: str = None):
         super().__init__(transform.position, transform.rotation, transform.scale)
-        self.path = path
+        self.asset_path = asset_path
 
 
 class Camera(Transform):

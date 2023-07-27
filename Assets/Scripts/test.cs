@@ -1,15 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Siccity.GLTFUtility;
 
 public class test : MonoBehaviour
 {
     [Header("Screenshot")]
     [SerializeField] private bool openAfterSave = true;
-    [SerializeField] private KeyCode takeScreenshotKeyCode = KeyCode.T;
-    [SerializeField] private KeyCode removeBackgroundKeyCode = KeyCode.B;
-    [SerializeField] private KeyCode saveScreenshotKeyCode = KeyCode.S;
-    [SerializeField] private KeyCode sceneSnapshotKeyCode = KeyCode.Y;
+    [SerializeField] private KeyCode takeScreenshotKeyCode = KeyCode.Q;
+    [SerializeField] private KeyCode removeBackgroundKeyCode = KeyCode.W;
+    [SerializeField] private KeyCode saveScreenshotKeyCode = KeyCode.E;
+    [SerializeField] private KeyCode sceneSnapshotKeyCode = KeyCode.R;
 
     [SerializeField] private string savePath = "\\Photos\\screenshotSaveUnity.png";
     [SerializeField] private Color colorToChange = Color.clear;
@@ -17,9 +18,16 @@ public class test : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float tolerance = 0.7f;
 
     [Header("Illumination")]
-    [SerializeField] private KeyCode changeIlluminationKeyCode = KeyCode.Y;
+    [SerializeField] private KeyCode changeIlluminationKeyCode = KeyCode.A;
     [SerializeField] private Vector3 rotationIllumination;
     [SerializeField] private float intensityIllumination;
+
+    [Header("Instantiate GLB")]
+    [SerializeField] private KeyCode instantiateGLBFromPathKeyCode = KeyCode.Z;
+    [SerializeField] private KeyCode instantiateGLBFromPrefabKeyCode = KeyCode.X;
+    [SerializeField] private Transform parentNewGLB;
+    [SerializeField] private string pathGLB;
+    [SerializeField] private GameObject glbPrefab;
 
     private Texture2D image;
     private bool isSceneSnapshotRequested = false;
@@ -47,6 +55,15 @@ public class test : MonoBehaviour
             illuminationData.intensity = intensityIllumination;
             SceneModifier.NeedUpdateIllumination(illuminationData);
         }
+
+        // Instantiate GLB
+        if (Input.GetKeyDown(instantiateGLBFromPathKeyCode)) {
+            LoadGLBFromPath(pathGLB);
+        }
+        if (Input.GetKeyDown(instantiateGLBFromPrefabKeyCode)) {
+            LoadGLBFromPrefab(glbPrefab);
+        }
+
     }
 
     private void OnEnable() {
@@ -67,4 +84,18 @@ public class test : MonoBehaviour
             RemoveImageBackground.SaveTextureToFile(image, Application.dataPath + savePath, openAfterSave);
         }
     }
+
+    // Instantiate GLB
+    private void LoadGLBFromPath(string path) {
+        GameObject glbGO = Importer.LoadFromFile(path);
+        if (glbGO != null) {
+            glbGO.transform.SetParent(parentNewGLB);
+        } else {
+            Debug.Log("Falha ao carregar e instanciar arquivo GLTF ou GLB: " + path);
+        }
+    }
+    private void LoadGLBFromPrefab(GameObject prefabGO) {
+        Instantiate(prefabGO, parentNewGLB);
+    }
+
 }

@@ -44,7 +44,7 @@ public class MyObjectData
     public Vector3 position;
     public Vector3 rotation;
     public Vector3 scale;
-    public string path;
+    public string asset_path;
 }
 
 [System.Serializable]

@@ -1,3 +1,4 @@
+import os
 from data import APIData, Camera, Transform, Vector3, Vector2, Screenshot, Illumination, UnityObject
 from api import API
 
@@ -6,7 +7,10 @@ object_position = Vector3(1.2, -1, -1)
 object_rotation = Vector3(-90, 0, 180)
 object_scale = Vector3(1, 1, 1)
 object_transform = Transform(object_position, object_rotation, object_scale)
-unity_object = UnityObject(object_transform)
+# asset_file = "cars/acura/3d5308e5db384d5cb69464f4f46c0ea6.glb"
+asset_file = "cars/alfa romeo/1c60072517e8419a908962e3dfb8737d.glb"
+asset_path = os.path.join("Assets", "Prefabs", "GLB", asset_file)
+unity_object = UnityObject(object_transform, asset_path=asset_path)
 
 #----------CAMERA----------
 camera_position = Vector3(0, 0, -3.17)
@@ -38,14 +42,14 @@ my_api = API()
 # my_api.scene_snapshot(data, show=True)
 
 # my_api.send_message("Test API")
-# my_api.send_update_scene(unity_object=unity_object, camera=None, illumination=illumination)
+my_api.send_update_scene(unity_object=unity_object, camera=camera, illumination=illumination)
 # my_api.image_filepath = r"E:\Programação\Unity Projects\API Python\Assets\Photos2"
-# my_api.scene_snapshot(data, show=False, tolerance=0.6, save_image=True, save_filename='test_image.png')
-# image = my_api.scene_snapshot(data, show=True, tolerance=0.7, save_image=True, save_filename='test_image2.png')
+# my_api.scene_snapshot(data, show=False, save_image=True, save_filename='test_image.png')
+# image = my_api.scene_snapshot(data, show=True, save_image=True, save_filename='test_image2.png')
 # image.show()
 
-# my_api.scene_snapshot(data, show=False, tolerance=0.7, save_image=True, save_path=r'test_image_123.png')
-# my_api.scene_snapshot(data, show=True, tolerance=0.3)
+# my_api.scene_snapshot(data, show=False, save_image=True, save_path=r'test_image_123.png')
+# my_api.scene_snapshot(data, show=False)
 # image = my_api.take_screenshot(show=True)
 
 # my_api.remove_image_background_using_python(image, show=True)

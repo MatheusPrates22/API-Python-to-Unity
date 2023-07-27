@@ -55,6 +55,15 @@ class API():
         json_data = APIData(message=message)
         self.__send_json(self.__to_json(json_data))
 
+    def send_update_object(self, unity_object: UnityObject = None):
+        self.send_update_scene(unity_object=unity_object)
+
+    def send_update_camera(self, camera: Camera = None):
+        self.send_update_scene(camera=camera)
+
+    def send_update_Illumination(self, illumination: Illumination = None):
+        self.send_update_scene(illumination=illumination)
+
     def send_update_scene(self, unity_object: UnityObject = None, camera: Camera = None, illumination: Illumination = None):
         print("Send update scene")
         if self.__is_not_connected():
