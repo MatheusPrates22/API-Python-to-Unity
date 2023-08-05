@@ -68,14 +68,14 @@ class API():
         json_data = APIData(unity_object=unity_object, camera=camera, illumination=illumination)
         self.__send_json(self.__to_json(json_data))
         
-    def take_screenshot(self, screenshot: Screenshot, save_image=False, save_path: str | None = None, show=False) -> Image.Image:
+    def take_screenshot(self, screenshot: Screenshot, save_image=False, save_filename: str | None = None, show=False) -> Image.Image:
         if self.__is_not_connected():
             return False
         print("Send take screenshot")
         json_data = APIData(screenshot=screenshot)
         self.__send_json(self.__to_json(json_data))
         #le a imagem recebida
-        return self.__read_image_bytes_received(save_image=save_image, save_filename=save_path, show=show)
+        return self.__read_image_bytes_received(save_image=save_image, save_filename=save_filename, show=show)
 
     def scene_snapshot(self, data_to_update_scene: APIData, save_image=False, save_filename: str | None = None, show=False):
         """
@@ -273,3 +273,18 @@ class API():
         with open(path_to_save, 'w') as arquivo_json:
             arquivo_json.write(my_json)
 
+
+def setIlluminationByHour(hour: float):
+    angle_per_hour = 15
+    angle_at_midnight = -90
+
+    angulo = (hour % 24) * angle_per_hour + angle_at_midnight
+
+    return angulo
+
+resultado = setIlluminationByHour(-14)
+print(resultado) 
+resultado = setIlluminationByHour(60)
+print(resultado) 
+resultado = setIlluminationByHour(14+24)
+print(resultado) 

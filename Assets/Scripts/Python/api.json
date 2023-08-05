@@ -1,75 +1,15 @@
 {
-    "unity_object": {
-        "position": {
-            "x": 0,
-            "y": 0,
-            "z": 0
-        },
-        "rotation": {
-            "x": -90,
-            "y": 0,
-            "z": 180
-        },
-        "scale": {
-            "x": 1,
-            "y": 1,
-            "z": 1
-        },
-        "asset_path": "Assets\\Prefabs\\GLB\\cars/alfa romeo/1c60072517e8419a908962e3dfb8737d.glb"
-    },
-    "camera": {
-        "position": {
-            "x": 0,
-            "y": 0,
-            "z": -5
-        },
-        "rotation": {
-            "x": 0,
-            "y": 0,
-            "z": 0
-        },
-        "scale": {
-            "x": 1,
-            "y": 1,
-            "z": 1
-        },
-        "fov": 60,
-        "resolution": {
-            "x": 1920,
-            "y": 1080
-        }
-    },
+    "unity_object": null,
+    "camera": null,
     "screenshot": {
         "take_screenshot": true,
         "remove_background": true,
         "tolerance": 0.7
     },
-    "illumination": {
-        "position": {
-            "x": 0,
-            "y": 0,
-            "z": 0
-        },
-        "rotation": {
-            "x": 50,
-            "y": -60,
-            "z": 0
-        },
-        "scale": {
-            "x": 1,
-            "y": 1,
-            "z": 1
-        },
-        "intensity": 3.0,
-        "color": {
-            "x": 0,
-            "y": 1,
-            "z": 1
-        }
-    },
+    "illumination": null,
     "message": null,
-    "_APIData__update_unity_object": true,
-    "_APIData__update_camera": true,
+    "_APIData__update_unity_object": false,
+    "_APIData__update_camera": false,
     "_APIData__update_screenshot": true,
-    "_APIData__update_illumination": true
+    "_APIData__update_illumination": false
 }

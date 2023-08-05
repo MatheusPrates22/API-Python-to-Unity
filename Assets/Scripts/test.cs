@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using Siccity.GLTFUtility;
 
 public class test : MonoBehaviour
@@ -11,16 +12,17 @@ public class test : MonoBehaviour
     [SerializeField] private KeyCode removeBackgroundKeyCode = KeyCode.W;
     [SerializeField] private KeyCode saveScreenshotKeyCode = KeyCode.E;
     [SerializeField] private KeyCode sceneSnapshotKeyCode = KeyCode.R;
-
     [SerializeField] private string savePath = "\\Photos\\screenshotSaveUnity.png";
     [SerializeField] private Color colorToChange = Color.clear;
     [SerializeField] private Color backgroundColor = Color.magenta;
     [SerializeField, Range(0f, 1f)] private float tolerance = 0.7f;
 
+
     [Header("Illumination")]
     [SerializeField] private KeyCode changeIlluminationKeyCode = KeyCode.A;
     [SerializeField] private Vector3 rotationIllumination;
     [SerializeField] private float intensityIllumination;
+
 
     [Header("Instantiate GLB")]
     [SerializeField] private KeyCode instantiateGLBFromPathKeyCode = KeyCode.Z;
@@ -28,6 +30,11 @@ public class test : MonoBehaviour
     [SerializeField] private Transform parentNewGLB;
     [SerializeField] private string pathGLB;
     [SerializeField] private GameObject glbPrefab;
+
+
+    [Header("Others")]
+    [SerializeField] private KeyCode printObjectSizeKeyCode = KeyCode.P;
+
 
     private Texture2D image;
     private bool isSceneSnapshotRequested = false;
@@ -64,6 +71,11 @@ public class test : MonoBehaviour
             LoadGLBFromPrefab(glbPrefab);
         }
 
+        // Others
+        if (Input.GetKeyDown(printObjectSizeKeyCode)) {
+            PrintObjectSize();
+        }
+
     }
 
     private void OnEnable() {
@@ -98,4 +110,99 @@ public class test : MonoBehaviour
         Instantiate(prefabGO, parentNewGLB);
     }
 
+
+    // Others
+    private void PrintObjectSize() {
+        Debug.Log("Printing object size");
+        Transform objectTransform = SceneModifier.GetObjectTransform();
+        
+        // Obtém o objeto pai com as maiores dimensões.
+        Transform parentWithMaxDimensions = GetParentWithMaxDimensions(objectTransform);
+
+        // Verifica se o objeto pai foi encontrado.
+        if (parentWithMaxDimensions != null)
+        {
+            // Obtém o componente Renderer do objeto pai com as maiores dimensões.
+            Renderer parentRenderer = parentWithMaxDimensions.GetComponent<Renderer>();
+
+            // Obtém as dimensões máximas do objeto pai em forma de um objeto Bounds.
+            Bounds parentBounds = parentRenderer.bounds;
+
+            // Obtém as dimensões máximas do objeto pai em forma de Vector3 (largura, altura e comprimento).
+            Vector3 parentSize = parentBounds.size;
+
+            // Exibe as dimensões máximas do objeto pai no console.
+            // Debug.Log($"Largura: {parentSize.x}, Altura: {parentSize.y}, Comprimento: {parentSize.z}");
+            Debug.Log($"Object Dimension: {parentBounds.size}");
+        }
+        else
+        {
+            // Caso o objeto pai não seja encontrado, exibe uma mensagem de erro no console.
+            Debug.Log($"Test -> Printing object size: {nameof(objectTransform)} is null!");
+        }
+
+                // Debug.Log($"Test -> Printing object size: object Renderer is null!");
+    }
+
+    // Função recursiva para encontrar o objeto pai com as maiores dimensões.
+    private Transform GetParentWithMaxDimensions(Transform currentTransform)
+    {
+        // Obtém o componente Renderer do objeto atual, se existir.
+        Renderer renderer = currentTransform.GetComponent<Renderer>();
+
+        // Inicializa o objeto pai com as maiores dimensões como o objeto atual.
+        Transform parentWithMaxDimensions = currentTransform;
+
+        // Inicializa as maiores dimensões como zero.
+        float maxDimensions = 0f;
+
+        // Verifica se o objeto atual tem um componente Renderer.
+        if (renderer != null)
+        {
+            // Obtém as dimensões do objeto atual.
+            float currentDimensions = GetObjectDimensions(renderer.bounds);
+
+            // Se as dimensões do objeto atual forem maiores que as maiores dimensões encontradas até agora,
+            // atualiza o objeto pai com as maiores dimensões e o valor máximo das dimensões.
+            if (currentDimensions > maxDimensions)
+            {
+                parentWithMaxDimensions = currentTransform;
+                maxDimensions = currentDimensions;
+            }
+        }
+
+        // Verifica os filhos recursivamente para encontrar o objeto com as maiores dimensões.
+        foreach (Transform child in currentTransform)
+        {
+            Transform childParentWithMaxDimensions = GetParentWithMaxDimensions(child);
+            float childDimensions = GetObjectDimensions(childParentWithMaxDimensions.GetComponent<Renderer>().bounds);
+
+            // Se as dimensões do filho forem maiores que as maiores dimensões encontradas até agora,
+            // atualiza o objeto pai com as maiores dimensões e o valor máximo das dimensões.
+            if (childDimensions > maxDimensions)
+            {
+                parentWithMaxDimensions = childParentWithMaxDimensions;
+                maxDimensions = childDimensions;
+            }
+        }
+
+        return parentWithMaxDimensions;
+    }
+
+    // Função auxiliar para calcular as dimensões do objeto a partir de Bounds.
+    private float GetObjectDimensions(Bounds bounds)
+    {
+        // Debug.Log($"Largura: {bounds.x}, Altura: {bounds.y}, Comprimento: {bounds.z}");
+        Debug.Log($"Children Dimension: {bounds.size}");
+        return bounds.size.x * bounds.size.y * bounds.size.z;
+    }
+
+    public struct ObjectDimension {
+        public float maxX;
+        public float maxY;
+        public float maxZ;
+        public float minX;
+        public float minY;
+        public float minZ;
+    }
 }

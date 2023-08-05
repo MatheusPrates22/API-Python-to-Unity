@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SceneModifier : MonoBehaviour
 {
-    public static SceneModifier Instance;
+    private static SceneModifier Instance;
 
     [Header("Python")]
 
@@ -57,6 +57,10 @@ public class SceneModifier : MonoBehaviour
     public static void NeedUpdateIllumination(MyIlluminationData myIllumination) {
         _myIlluminationData = myIllumination;
         needUpdateIllumination = true; 
+    }
+
+    public static Transform GetObjectTransform() {
+        return Instance.objectToChangeTransform;
     }
 
     private void UpdateAtObject() {

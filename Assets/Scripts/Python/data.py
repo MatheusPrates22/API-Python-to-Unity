@@ -25,7 +25,7 @@ class UnityObject(Transform):
 
 
 class Camera(Transform):
-    def __init__(self, transform: Transform, fov: float, resolution: Vector2):
+    def __init__(self, transform: Transform, fov: float = 60, resolution: Vector2 = Vector2(1920, 1080)):
         super().__init__(transform.position, transform.rotation, transform.scale)
         self.fov = fov
         self.resolution = resolution
@@ -36,6 +36,13 @@ class Illumination(Transform):
         super().__init__(transform.position, transform.rotation, transform.scale)
         self.intensity = intensity
         self.color = color
+
+    def set_rotation_by_hour(self, hour: float):
+        angle_per_hour = 15
+        angle_at_midnight = -90
+
+        x_rotation = (hour % 24) * angle_per_hour + angle_at_midnight
+        self.rotation = Vector3(x_rotation, 0, 0)
 
 
 class Screenshot:
